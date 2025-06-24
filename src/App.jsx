@@ -3,7 +3,7 @@ import confetti from 'canvas-confetti';
 import './App.css';
 import StatisticsDashboard from './StatisticsDashboard';
 
-// --- 유틸리티 함수 ---
+// --- 유틸리티 함수 및 상수 (변경 없음) ---
 const shuffleArray = (array) => array.slice().sort(() => Math.random() - 0.5);
 const isYesterday = (d1, d2) => {
     const y = new Date(d2);
@@ -11,12 +11,10 @@ const isYesterday = (d1, d2) => {
     return d1.toDateString() === y.toDateString();
 };
 const isToday = (d1, d2) => d1.toDateString() === d2.toDateString();
-
-// --- 상수 ---
 const srsIntervals = [1, 3, 7, 14, 30, 90, 180, 365];
 
 function App() {
-    // --- 상태 관리 (State) ---
+    // --- 상태 관리 및 모든 로직 함수 (변경 없음) ---
     const [isLoading, setIsLoading] = useState(true);
     const [view, setView] = useState('start');
     const [allQuestions, setAllQuestions] = useState([]);
@@ -25,7 +23,7 @@ function App() {
     const [timerSetting, setTimerSetting] = useState(30);
     const [selectedCategory, setSelectedCategory] = useState('All');
     const [selectedDifficulty, setSelectedDifficulty] = useState('All');
-
+    
     const [currentQuestionSet, setCurrentQuestionSet] = useState([]);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [shuffledOptions, setShuffledOptions] = useState([]);
@@ -38,7 +36,6 @@ function App() {
     const [quizProgress, setQuizProgress] = useState({});
     const [learningStreak, setLearningStreak] = useState(0);
     
-    // --- 데이터 로딩 및 저장 ---
     const GOOGLE_SHEETS_API_URL = import.meta.env.VITE_API_URL || '';
 
     useEffect(() => {
@@ -343,23 +340,38 @@ function App() {
                         </div>
                         
                         <p className="question-text">{currentQuestion.Question}</p>
-                        <div className="options-container">
-                            {shuffledOptions.map((option) => {
-                                const isSelected = userAnswers[currentQuestion.ID] === option;
-                                let btnClass = 'option-btn';
-                                if (isAnswered) {
-                                    if (option === currentQuestion.Answer) btnClass += ' correct';
-                                    else if (isSelected) btnClass += ' incorrect';
-                                } else if (isSelected) {
-                                    btnClass += ' selected';
-                                }
-                                return (
-                                    <button key={option} onClick={() => handleOptionChange(currentQuestion.ID, option)} className={btnClass} disabled={isAnswered}>
-                                        {option}
-                                    </button>
-                                );
-                            })}
-                        </div>
+                        
+                        {/* [버그 수정] 문제 타입에 따라 다른 UI를 보여주도록 수정 */}
+                        {currentQuestion.Type === 'MultipleChoice' ? (
+                            <div className="options-container">
+                                {shuffledOptions.map((option) => {
+                                    const isSelected = userAnswers[currentQuestion.ID] === option;
+                                    let btnClass = 'option-btn';
+                                    if (isAnswered) {
+                                        if (option === currentQuestion.Answer) btnClass += ' correct';
+                                        else if (isSelected) btnClass += ' incorrect';
+                                    } else if (isSelected) {
+                                        btnClass += ' selected';
+                                    }
+                                    return (
+                                        <button key={option} onClick={() => handleOptionChange(currentQuestion.ID, option)} className={btnClass} disabled={isAnswered}>
+                                            {option}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        ) : (
+                            <input
+                                type="text"
+                                value={userAnswers[currentQuestion.ID] || ''}
+                                onChange={(e) => handleOptionChange(currentQuestion.ID, e.target.value)}
+                                className="short-answer-input"
+                                placeholder="정답을 입력하세요"
+                                disabled={isAnswered}
+                                autoFocus
+                            />
+                        )}
+
                         {isAnswered && (
                             <div className={`feedback-section ${feedback.isCorrect ? 'correct' : 'incorrect'}`}>
                                 <p className={`feedback-text ${feedback.isCorrect ? 'correct' : 'incorrect'}`}>{feedback.text}</p>

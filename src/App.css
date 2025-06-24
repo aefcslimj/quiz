@@ -1,4 +1,4 @@
-/* App.css */
+/* [버그 수정] App.css */
 
 .app-container {
   width: 100%;
@@ -48,7 +48,6 @@
   font-weight: 500;
   text-align: center;
 }
-/* [난이도 기능] 필터 컨테이너 스타일 */
 .filters-container {
     display: flex;
     flex-direction: column;
@@ -71,7 +70,7 @@
 }
 .category-select {
   width: 100%;
-  padding: 12px 16px; /* 크기 살짝 조정 */
+  padding: 12px 16px;
   font-size: 1rem;
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius-m);
@@ -86,7 +85,6 @@
 .action-btn {
   width: 100%;
   padding: 16px;
-  margin-bottom: 10px;
   font-size: 1.1rem;
   font-weight: 600;
   border: none;
@@ -179,6 +177,27 @@
 .option-btn.incorrect { border-color: var(--incorrect-color); background-color: var(--incorrect-light-color); }
 .option-btn:disabled { cursor: not-allowed; opacity: 0.8; }
 
+/* [버그 수정] 주관식 입력창 스타일 추가 */
+.short-answer-input {
+  width: 100%;
+  padding: 16px;
+  font-size: 1rem;
+  border: 2px solid var(--border-color);
+  border-radius: var(--border-radius-m);
+  background-color: var(--neutral-bg-color);
+  transition: all 0.2s ease;
+}
+.short-answer-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    background-color: white;
+}
+.short-answer-input:disabled {
+    background-color: var(--border-color);
+    opacity: 0.8;
+}
+
+
 /* --- 피드백 및 해설 --- */
 .feedback-section {
   margin-top: 24px;
@@ -190,7 +209,7 @@
 .feedback-text { font-size: 1.1rem; font-weight: 600; text-align: center; }
 .feedback-text.correct { color: var(--correct-color); }
 .feedback-text.incorrect { color: var(--incorrect-color); }
-.explanation-text { margin-top: 12px; line-height: 1.7; color: var(--text-explanation-color); }
+.explanation-text { margin-top: 12px; line-height: 1.7; color: var(--text-explantion-color); }
 .explanation-text strong { color: var(--text-primary-color); }
 
 /* --- 결과 화면 --- */
@@ -209,7 +228,7 @@
 .exit-btn {
     font-size: 0.9rem;
     font-weight: 500;
-    color: var(--text-primary-color);
+    color: var(--text-secondary-color);
     background-color: var(--border-color);
     border: none;
     cursor: pointer;
@@ -268,5 +287,5 @@
   .quiz-container { padding: 40px; }
   .header { font-size: 2.5rem; }
   .options-container { grid-template-columns: 1fr 1fr; gap: 16px; }
-  .filters-container { flex-direction: row; gap: 20px; } /* 넓은 화면에서는 필터를 가로로 배치 */
+  .filters-container { flex-direction: row; gap: 20px; }
 }

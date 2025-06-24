@@ -69,9 +69,6 @@ function StatisticsDashboard({ quizProgress, allQuestions, onBack }) {
                     <span className="no-data-icon">📊</span>
                     <h2>데이터가 부족해요!</h2>
                     <p>퀴즈를 하나 이상 완료하면 이곳에서 멋진 학습 리포트를 볼 수 있습니다.</p>
-                    <button onClick={onBack} className="start-btn" style={{textAlign: 'center', maxWidth: '250px'}}>
-                        퀴즈 풀러가기
-                    </button>
                 </div>
             </div>
         );
