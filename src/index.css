@@ -1,0 +1,38 @@
+/* [디자인 복원] src/index.css */
+
+:root {
+  --primary-color: #007aff;
+  --primary-light-color: #e5f2ff;
+  --correct-color: #34c759;
+  --correct-light-color: #eaf8ee;
+  --incorrect-color: #ff3b30;
+  --incorrect-light-color: #ffeaea;
+  --neutral-bg-color: #f2f2f7;
+  --card-bg-color: #ffffff;
+  --text-primary-color: #1c1c1e;
+  --text-secondary-color: #8a8a8e;
+  --action-box-secondary-color: #652dc1;
+  --border-color: #e5e5ea;
+  --shadow-color: rgba(0, 0, 0, 0.08);
+
+  --font-family-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+
+  --border-radius-m: 12px;
+  --border-radius-l: 20px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-family-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--neutral-bg-color);
+  color: var(--text-primary-color);
+  line-height: 1.5;
+}

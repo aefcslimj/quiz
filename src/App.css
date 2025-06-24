@@ -1,0 +1,306 @@
+/* [버그 수정] App.css */
+
+.app-container {
+  width: 100%;
+  min-height: 100vh;
+  padding: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.quiz-container {
+  width: 100%;
+  max-width: 680px;
+  background: var(--card-bg-color);
+  border-radius: var(--border-radius-l);
+  padding: 24px;
+  box-shadow: 0 8px 32px var(--shadow-color);
+  position: relative;
+}
+
+/* --- 화면 공통 --- */
+.header {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  text-align: center;
+}
+.description {
+  font-size: 1rem;
+  color: var(--text-secondary-color);
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+/* --- 시작 화면 --- */
+.view-start {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: relative; /* 설정 버튼의 위치 기준점을 위해 추가 */
+}
+.streak-message {
+  background-color: var(--primary-light-color);
+  color: var(--primary-color);
+  border-radius: var(--border-radius-m);
+  padding: 16px;
+  font-weight: 500;
+  text-align: center;
+}
+.category-select {
+  width: 100%;
+  padding: 16px;
+  font-size: 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-m);
+  background-color: var(--neutral-bg-color);
+  -webkit-appearance: none; appearance: none;
+  background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%238a8a8e%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  background-size: 12px auto;
+}
+
+.action-btn {
+  width: 100%;
+  padding: 16px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--border-radius-m);
+  cursor: pointer;
+  transition: transform 0.1s ease-out;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+.action-btn:active {
+  transform: scale(0.98);
+}
+.btn-primary { background-color: var(--primary-color); color: white; }
+.btn-correct { background-color: var(--correct-color); color: white; }
+.btn-secondary { background-color: var(--action-box-secondary-color); color: white; }
+.action-btn:disabled { background-color: var(--border-color); color: var(--text-secondary-color); cursor: not-allowed; }
+
+/* --- 퀴즈 진행 화면 --- */
+.quiz-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  color: var(--text-secondary-color);
+  font-weight: 500;
+}
+.timer-bar-container { height: 6px; background-color: var(--border-color); border-radius: 3px; margin-bottom: 16px; overflow: hidden; }
+.timer-bar { height: 100%; border-radius: 3px; transition: width 1s linear, background-color 0.5s ease-in-out; }
+
+.question-text {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+.options-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+.option-btn {
+  width: 100%;
+  padding: 16px;
+  font-size: 1rem;
+  font-weight: 500;
+  border: 2px solid var(--border-color);
+  border-radius: var(--border-radius-m);
+  background-color: var(--card-bg-color);
+  color: var(--text-primary-color);
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.option-btn:hover:not(:disabled) {
+  border-color: var(--primary-color);
+  background-color: var(--primary-light-color);
+}
+.option-btn.selected {
+  border-color: var(--primary-color);
+  background-color: var(--primary-light-color);
+  font-weight: 600;
+}
+.option-btn.correct { border-color: var(--correct-color); background-color: var(--correct-light-color); }
+.option-btn.incorrect { border-color: var(--incorrect-color); background-color: var(--incorrect-light-color); }
+.option-btn:disabled { cursor: not-allowed; opacity: 0.8; }
+
+/* --- 피드백 및 해설 --- */
+.feedback-section {
+  margin-top: 24px;
+  padding: 16px;
+  border-radius: var(--border-radius-m);
+}
+.feedback-section.correct { background-color: var(--correct-light-color); }
+.feedback-section.incorrect { background-color: var(--incorrect-light-color); }
+.feedback-text { font-size: 1.1rem; font-weight: 600; text-align: center; }
+.feedback-text.correct { color: var(--correct-color); }
+.feedback-text.incorrect { color: var(--incorrect-color); }
+.explanation-text { margin-top: 12px; line-height: 1.7; color: var(--text-secondary-color); }
+.explanation-text strong { color: var(--text-primary-color); }
+
+/* --- 결과 화면 --- */
+.view-finished { text-align: center; }
+.result-score { font-size: 1.2rem; margin-bottom: 8px; }
+.result-score strong { font-size: 3rem; color: var(--primary-color); font-weight: 700; }
+.result-actions { margin-top: 32px; display: flex; flex-direction: column; gap: 12px; }
+
+/* --- 로딩/에러 화면 --- */
+.message-container {
+  padding: 40px 0;
+  text-align: center;
+  color: var(--text-secondary-color);
+}
+
+.exit-btn {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-secondary-color);
+    background-color: var(--border-color);
+    border: none;
+    cursor: pointer;
+    padding: 6px 12px;
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+.exit-btn:hover {
+    background-color: var(--incorrect-light-color);
+    color: var(--incorrect-color);
+}
+
+/* [버그 수정] 설정 버튼 및 모달 스타일 복원 */
+.settings-btn {
+    position: absolute;
+    top: -12px;
+    right: 0;
+    background: none;
+    border: none;
+    font-size: 1.8em;
+    cursor: pointer;
+    color: #cccccc;
+    transition: all 0.2s;
+}
+.settings-btn:hover {
+    color: var(--text-secondary-color);
+    transform: rotate(30deg);
+}
+
+.settings-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.settings-modal {
+    background-color: white;
+    padding: 24px;
+    border-radius: var(--border-radius-l);
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+}
+.settings-modal h2 {
+    margin-top: 0;
+    margin-bottom: 24px;
+    text-align: center;
+    font-size: 1.5rem;
+}
+.setting-group {
+    margin-bottom: 20px;
+}
+.setting-group label {
+    font-weight: 600;
+    display: block;
+    margin-bottom: 12px;
+    font-size: 1rem;
+}
+.setting-group .options {
+    display: flex;
+    gap: 10px;
+}
+.setting-group .options button {
+    flex-grow: 1;
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    background-color: #f8f9fa;
+    cursor: pointer;
+    border-radius: var(--border-radius-m);
+    transition: all 0.2s;
+    font-weight: 500;
+}
+.setting-group .options button.active {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+    font-weight: 600;
+}
+.settings-close-btn {
+    width: 100%;
+    margin-top: 16px;
+}
+
+/* --- 데스크톱/태블릿 반응형 스타일 --- */
+@media (min-width: 768px) {
+  .app-container {
+    align-items: center;
+    padding: 40px;
+  }
+  .quiz-container {
+    padding: 40px;
+  }
+  .header {
+    font-size: 2.5rem;
+  }
+  .options-container {
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px; /* 로딩 화면의 최소 높이 */
+}
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 6px solid var(--border-color);
+    border-top: 6px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 24px;
+}
+.loading-text {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-primary-color);
+    margin: 0 1em 8px 1em;
+}
+.loading-subtext {
+    font-size: 1rem;
+    color: var(--text-secondary-color);
+    margin: 0;
+}
