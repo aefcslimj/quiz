@@ -95,6 +95,7 @@
   justify-content: center;
   align-items: center;
   gap: 8px;
+  margin-bottom: 12px;
 }
 .action-btn:active {
   transform: scale(0.98);
