@@ -1,25 +1,38 @@
+# .gitignore
+
+# Dependencies
+# 의존성 모듈 폴더. 용량이 매우 크고, npm install을 통해 재생성 가능하므로 절대 Git에 포함하지 않습니다.
+/node_modules
+
+# Build output
+# 'npm run build' 실행 시 생성되는 결과물 폴더. 소스 코드가 아니므로 제외합니다.
+/dist
+/build
+
+# Local Environment Files
+# API 키나 비밀 값 등 민감한 정보를 담는 환경 변수 파일. 보안을 위해 반드시 제외합니다.
+.env
+.env.local
+.env.*.local
+
 # Logs
-logs
-*.log
+# 에러 발생 시 생성되는 로그 파일. 개인 컴퓨터 환경에만 필요하므로 제외합니다.
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
-lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
+# IDE / Editor directories
+# VS Code, WebStorm 등 코드 에디터가 사용하는 설정 폴더를 제외합니다.
+.idea/
+.vscode/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
-.env
+
+# System Files
+# 각 운영체제가 자동으로 생성하는 시스템 파일을 제외합니다.
+.DS_Store
+Thumbs.db
