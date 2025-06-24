@@ -1,8 +1,7 @@
-/* [레이아웃 버그 수정] src/StatisticsDashboard.css */
+/* StatisticsDashboard.css */
 
 .stats-container {
     width: 100%;
-    /* max-width는 App.css의 .quiz-container를 따르므로 별도 지정 불필요 */
 }
 
 .stats-header {
@@ -52,10 +51,9 @@
     margin-bottom: 30px;
 }
 
-/* [레이아웃 버그 수정] 모바일에서는 1열, 데스크톱에서는 여러 열로 변경 */
 .stats-grid {
     display: grid;
-    grid-template-columns: 1fr; /* 모바일 기본: 1열 */
+    grid-template-columns: 1fr;
     gap: 16px;
 }
 
@@ -92,28 +90,36 @@
     border-radius: 4px;
 }
 
-.category-stats ul, .incorrect-questions ul {
+/* [난이도 기능] 통계 리스트 스타일 공통화 */
+.stats-list {
     list-style: none;
     padding: 0;
     margin: 0;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 12px;
 }
-.category-stats li, .incorrect-questions li {
+.stats-list li {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 8px 0;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-color);
 }
-.category-name, .question-title {
+.stats-list li:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+.list-item-name {
     font-weight: 500;
     color: var(--text-secondary-color);
 }
-.category-accuracy {
+.list-item-value {
     font-weight: 600;
-    color: var(--correct-color);
 }
+.category-accuracy .list-item-value { color: var(--correct-color); }
+.difficulty-stats .list-item-value { color: var(--primary-color); }
+
 .question-title {
     white-space: nowrap;
     overflow: hidden;
@@ -130,9 +136,8 @@
 }
 
 /* 데스크톱 반응형 스타일 */
-@media (min-width: 768px) {
+@media (min-width: 900px) { /* 더 넓은 화면에서 3열로 */
     .stats-grid {
-        /* 화면이 넓어지면, 각 카드의 최소 너비 250px를 유지하며 가능한 많은 열을 생성 */
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
         gap: 24px;
     }

@@ -21,10 +21,11 @@ function App() {
     const [view, setView] = useState('start');
     const [allQuestions, setAllQuestions] = useState([]);
     const [error, setError] = useState(null);
-    const [isSettingsOpen, setIsSettingsOpen] = useState(false); // [버그 수정] 상태 선언 복원
+    const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const [timerSetting, setTimerSetting] = useState(30);
     const [selectedCategory, setSelectedCategory] = useState('All');
-    
+    const [selectedDifficulty, setSelectedDifficulty] = useState('All');
+
     const [currentQuestionSet, setCurrentQuestionSet] = useState([]);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [shuffledOptions, setShuffledOptions] = useState([]);
@@ -37,6 +38,7 @@ function App() {
     const [quizProgress, setQuizProgress] = useState({});
     const [learningStreak, setLearningStreak] = useState(0);
     
+    // --- 데이터 로딩 및 저장 ---
     const GOOGLE_SHEETS_API_URL = import.meta.env.VITE_API_URL || '';
 
     useEffect(() => {
@@ -96,6 +98,12 @@ function App() {
         return ['All', ...categories];
     }, [allQuestions]);
 
+    const uniqueDifficulties = useMemo(() => {
+        if (!allQuestions || allQuestions.length === 0) return ['All'];
+        const difficulties = new Set(allQuestions.map(q => q.Difficulty).filter(Boolean));
+        return ['All', ...difficulties];
+    }, [allQuestions]);
+
     useEffect(() => {
         if (view === 'finished' && currentQuestionSet.length > 0) {
             const accuracy = score / currentQuestionSet.length;
@@ -144,14 +152,20 @@ function App() {
         return () => clearInterval(interval);
     }, [view, timer, isAnswered, timerSetting]);
 
-    const startCategoryQuiz = useCallback(() => {
-        const questionsToStart = selectedCategory === 'All' ? allQuestions : allQuestions.filter(q => q.Category === selectedCategory);
+    const startFilteredQuiz = useCallback(() => {
+        let questionsToStart = allQuestions;
+        if (selectedCategory !== 'All') {
+            questionsToStart = questionsToStart.filter(q => q.Category === selectedCategory);
+        }
+        if (selectedDifficulty !== 'All') {
+            questionsToStart = questionsToStart.filter(q => q.Difficulty === selectedDifficulty);
+        }
         if (questionsToStart.length === 0) {
-            alert("선택하신 카테고리에 해당하는 문제가 없습니다.");
+            alert("선택하신 조건에 해당하는 문제가 없습니다.");
             return;
         }
         commonStartQuiz(shuffleArray(questionsToStart));
-    }, [allQuestions, selectedCategory, timerSetting]);
+    }, [allQuestions, selectedCategory, selectedDifficulty, timerSetting]);
 
     const startReviewQuiz = useCallback(() => {
         const today = new Date().toISOString().split('T')[0];
@@ -234,7 +248,6 @@ function App() {
         return 'var(--primary-color)';
     };
 
-    // [버그 수정] 설정 모달을 그리는 함수 복원
     const renderSettingsModal = () => (
         <div className="settings-overlay" onClick={() => setIsSettingsOpen(false)}>
             <div className="settings-modal" onClick={(e) => e.stopPropagation()}>
@@ -264,12 +277,10 @@ function App() {
                 const reviewCount = allQuestions.filter(q => quizProgress[q.ID]?.nextReviewDate <= new Date().toISOString().split('T')[0]).length;
                 return (
                     <div className="view-start">
-                        {/* [버그 수정] 설정 모달 렌더링 호출 복원 */}
                         {isSettingsOpen && renderSettingsModal()}
                         <button className="settings-btn" onClick={() => setIsSettingsOpen(true)}>⚙️</button>
-                        
                         <h1 className="header">학습 퀴즈</h1>
-                        <p className="description">주제를 선택하고 퀴즈를 시작하세요.</p>
+                        <p className="description">풀고 싶은 문제를 선택하고 퀴즈를 시작하세요.</p>
                         
                         {learningStreak > 0 && (
                             <div className="streak-message">
@@ -277,19 +288,32 @@ function App() {
                             </div>
                         )}
 
-                        <select className="category-select" value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)}>
-                            {uniqueCategories.map(cat => (<option key={cat} value={cat}>{cat}</option>))}
-                        </select>
+                        <div className="filters-container">
+                            <div className="filter-group">
+                                <label htmlFor="category-select">카테고리</label>
+                                <select id="category-select" className="category-select" value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)}>
+                                    {uniqueCategories.map(cat => (<option key={cat} value={cat}>{cat}</option>))}
+                                </select>
+                            </div>
+                            <div className="filter-group">
+                                <label htmlFor="difficulty-select">난이도</label>
+                                <select id="difficulty-select" className="category-select" value={selectedDifficulty} onChange={(e) => setSelectedDifficulty(e.target.value)}>
+                                    {uniqueDifficulties.map(diff => (<option key={diff} value={diff}>{diff}</option>))}
+                                </select>
+                            </div>
+                        </div>
                         
-                        <button className="action-btn btn-primary" onClick={startCategoryQuiz}>
-                           {selectedCategory === 'All' ? '전체 문제' : selectedCategory} 퀴즈 시작
-                        </button>
-                        <button className="action-btn btn-correct" onClick={startReviewQuiz} disabled={reviewCount === 0}>
-                           오늘 복습 ({reviewCount})
-                        </button>
-                        <button className="action-btn btn-secondary" onClick={() => setView('stats')}>
-                           통계 보기
-                        </button>
+                        <div className="start-options">
+                            <button className="action-btn btn-primary" onClick={startFilteredQuiz}>
+                               퀴즈 시작하기
+                            </button>
+                            <button className="action-btn btn-correct" onClick={startReviewQuiz} disabled={reviewCount === 0}>
+                               오늘 복습 ({reviewCount})
+                            </button>
+                            <button className="action-btn btn-secondary" onClick={() => setView('stats')}>
+                               통계 보기
+                            </button>
+                        </div>
                     </div>
                 );
             
@@ -311,6 +335,13 @@ function App() {
                                 }
                             }}>나가기</button>
                         </div>
+                        
+                        <div className="question-meta-container">
+                            <span className="meta-tag category">{currentQuestion.Category}</span>
+                            {currentQuestion.SubCategory && <span className="meta-tag">{currentQuestion.SubCategory}</span>}
+                            {currentQuestion.Difficulty && <span className="meta-tag difficulty">{currentQuestion.Difficulty}</span>}
+                        </div>
+                        
                         <p className="question-text">{currentQuestion.Question}</p>
                         <div className="options-container">
                             {shuffledOptions.map((option) => {
@@ -377,10 +408,9 @@ function App() {
             <div className="quiz-container">
                 {isLoading 
                     ? (
-                        <div className="loading-container">
+                        <div className="message-container">
                             <div className="loading-spinner"></div>
-                            <p className="loading-text">데이터를 불러오는 중입니다...</p>
-                            <p className="loading-subtext">잠시만 기다려주세요.</p>
+                            <p style={{marginTop: '16px'}}>데이터를 불러오는 중입니다...</p>
                         </div>
                       )
                     : error 
