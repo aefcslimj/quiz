@@ -3,18 +3,41 @@ import confetti from 'canvas-confetti';
 import './App.css';
 import StatisticsDashboard from './StatisticsDashboard';
 
-// --- 유틸리티 함수 및 상수 (변경 없음) ---
+const toYYYYMMDD = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+};
+
+/**
+ * [추가] 날짜를 'YYYY-MM-DD HH:mm:ss' 형식의 현지 시간 문자열로 변환
+ * @param {Date} date - 변환할 Date 객체
+ * @returns {string}
+ */
+const toLocalISOString = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+};
+
+
 const shuffleArray = (array) => array.slice().sort(() => Math.random() - 0.5);
 const isYesterday = (d1, d2) => {
     const y = new Date(d2);
     y.setDate(y.getDate() - 1);
     return d1.toDateString() === y.toDateString();
 };
-const isToday = (d1, d2) => d1.toDateString() === d2.toDateString();
+const isToday = (d1, d2) => {
+    return toYYYYMMDD(d1) === toYYYYMMDD(d2);
+};
 const srsIntervals = [1, 3, 7, 14, 30, 90, 180, 365];
 
 function App() {
-    // --- 상태 관리 및 모든 로직 함수 (변경 없음) ---
     const [isLoading, setIsLoading] = useState(true);
     const [view, setView] = useState('start');
     const [allQuestions, setAllQuestions] = useState([]);
@@ -67,9 +90,13 @@ function App() {
                 if (lastQuizDateStr) {
                     const lastDate = new Date(lastQuizDateStr);
                     const today = new Date();
-                    if (isToday(lastDate, today)) setLearningStreak(savedStreak);
-                    else if (isYesterday(lastDate, today)) setLearningStreak(savedStreak + 1);
-                    else setLearningStreak(0);
+                    if (isToday(lastDate, today)) {
+                        setLearningStreak(savedStreak);
+                    } else if (isYesterday(lastDate, today)) {
+                        setLearningStreak(savedStreak + 1);
+                    } else {
+                        setLearningStreak(0);
+                    }
                 } else {
                     setLearningStreak(0);
                 }
@@ -85,7 +112,7 @@ function App() {
 
     const saveDataToStorage = useCallback((progress, streak) => {
         localStorage.setItem('quizProgress', JSON.stringify(progress));
-        localStorage.setItem('lastQuizDate', new Date().toISOString().split('T')[0]);
+        localStorage.setItem('lastQuizDate', toYYYYMMDD(new Date()));
         localStorage.setItem('streak', streak.toString());
     }, []);
 
@@ -165,8 +192,13 @@ function App() {
     }, [allQuestions, selectedCategory, selectedDifficulty, timerSetting]);
 
     const startReviewQuiz = useCallback(() => {
-        const today = new Date().toISOString().split('T')[0];
-        const questionsToStart = allQuestions.filter(q => quizProgress[q.ID]?.nextReviewDate <= today);
+        const today = toYYYYMMDD(new Date());
+        
+        const questionsToStart = allQuestions.filter(q => {
+            const progress = quizProgress[q.ID];
+            return progress && progress.nextReviewDate && progress.nextReviewDate <= today;
+        });
+        
         if (questionsToStart.length === 0) {
             alert("오늘 복습할 문제가 없습니다!");
             return;
@@ -187,38 +219,58 @@ function App() {
 
     const handleAnswerSubmission = useCallback((isTimeout = false) => {
         if (isAnswered || !currentQuestion) return;
+        
         let updatedStreak = learningStreak;
         const today = new Date();
         const lastQuizDateStr = localStorage.getItem('lastQuizDate');
-        if (!lastQuizDateStr || !isToday(new Date(lastQuizDateStr), today)) {
+        
+        const lastDate = lastQuizDateStr ? new Date(lastQuizDateStr) : null;
+
+        if (!lastDate || !isToday(lastDate, today)) {
             const savedStreak = parseInt(localStorage.getItem('streak') || '0', 10);
-            if (lastQuizDateStr && isYesterday(new Date(lastQuizDateStr), today)) {
+            if (lastDate && isYesterday(lastDate, today)) {
                 updatedStreak = savedStreak + 1;
             } else {
                 updatedStreak = 1;
             }
             setLearningStreak(updatedStreak);
         }
+        
         const userAnswer = userAnswers[currentQuestion.ID];
         let isCorrect = false;
         if (!isTimeout) {
-            if (currentQuestion.Type === 'MultipleChoice') isCorrect = userAnswer === currentQuestion.Answer;
-            else if (currentQuestion.Type === 'ShortAnswer') {
+            if (currentQuestion.Type === 'MultipleChoice') {
+                isCorrect = userAnswer === currentQuestion.Answer;
+            } else if (currentQuestion.Type === 'ShortAnswer') {
                 const cs = String(currentQuestion.CaseSensitive).toLowerCase() === 'true';
                 const ua = cs ? (userAnswer || '') : (userAnswer || '').toLowerCase();
-                const ca = String(currentQuestion.Answer).split(',').map(a => cs ? a.trim() : a.trim().toLowerCase());
-                isCorrect = ca.includes(ua);
+                const correctAnswers = String(currentQuestion.Answer).split(',').map(a => cs ? a.trim() : a.trim().toLowerCase());
+                isCorrect = correctAnswers.includes(ua);
             }
         }
         setFeedback({ text: isTimeout ? '시간 초과!' : (isCorrect ? '정답입니다!' : '오답입니다.'), isCorrect });
         if (isCorrect) setScore(prev => prev + 1);
 
         const progress = quizProgress[currentQuestion.ID] || { srsLevel: 0 };
-        const newSrsLevel = isCorrect ? progress.srsLevel + 1 : 1;
+        const currentSrsLevel = Math.max(0, progress.srsLevel || 0);
+        const newSrsLevel = isCorrect ? currentSrsLevel + 1 : 1;
         const intervalDays = srsIntervals[Math.min(newSrsLevel - 1, srsIntervals.length - 1)];
-        const nextReviewDate = new Date();
-        nextReviewDate.setDate(nextReviewDate.getDate() + intervalDays);
-        const updatedProgress = { ...quizProgress, [currentQuestion.ID]: { ...progress, attempts: (progress.attempts || 0) + 1, correct: (progress.correct || 0) + (isCorrect ? 1 : 0), srsLevel: newSrsLevel, lastAttemptDate: new Date().toISOString(), nextReviewDate: nextReviewDate.toISOString().split('T')[0] } };
+        const nextReviewDateObj = new Date();
+        nextReviewDateObj.setDate(nextReviewDateObj.getDate() + intervalDays);
+
+        const updatedProgress = { 
+            ...quizProgress, 
+            [currentQuestion.ID]: { 
+                ...progress, 
+                attempts: (progress.attempts || 0) + 1, 
+                correct: (progress.correct || 0) + (isCorrect ? 1 : 0), 
+                srsLevel: newSrsLevel, 
+                // [수정] 마지막 시도 시간을 현지 시간 기준으로 저장
+                lastAttemptDate: toLocalISOString(new Date()),
+                nextReviewDate: toYYYYMMDD(nextReviewDateObj) 
+            } 
+        };
+
         setQuizProgress(updatedProgress);
         saveDataToStorage(updatedProgress, updatedStreak);
         setIsAnswered(true);
@@ -271,7 +323,10 @@ function App() {
     const renderView = () => {
         switch (view) {
             case 'start':
-                const reviewCount = allQuestions.filter(q => quizProgress[q.ID]?.nextReviewDate <= new Date().toISOString().split('T')[0]).length;
+                const reviewCount = allQuestions.filter(q => {
+                    const progress = quizProgress[q.ID];
+                    return progress && progress.nextReviewDate && progress.nextReviewDate <= toYYYYMMDD(new Date());
+                }).length;
                 return (
                     <div className="view-start">
                         {isSettingsOpen && renderSettingsModal()}
@@ -305,7 +360,7 @@ function App() {
                                퀴즈 시작하기
                             </button>
                             <button className="action-btn btn-correct" onClick={startReviewQuiz} disabled={reviewCount === 0}>
-                               오늘 복습 ({reviewCount})
+                               맞춤 복습 ({reviewCount}개)
                             </button>
                             <button className="action-btn btn-secondary" onClick={() => setView('stats')}>
                                통계 보기
@@ -341,7 +396,6 @@ function App() {
                         
                         <p className="question-text">{currentQuestion.Question}</p>
                         
-                        {/* [버그 수정] 문제 타입에 따라 다른 UI를 보여주도록 수정 */}
                         {currentQuestion.Type === 'MultipleChoice' ? (
                             <div className="options-container">
                                 {shuffledOptions.map((option) => {
@@ -375,6 +429,13 @@ function App() {
                         {isAnswered && (
                             <div className={`feedback-section ${feedback.isCorrect ? 'correct' : 'incorrect'}`}>
                                 <p className={`feedback-text ${feedback.isCorrect ? 'correct' : 'incorrect'}`}>{feedback.text}</p>
+                                
+                                {!feedback.isCorrect && (
+                                    <p className="correct-answer-text">
+                                        <strong>정답:</strong> {currentQuestion.Answer}
+                                    </p>
+                                )}
+
                                 {currentQuestion.Explanation && (
                                     <p className="explanation-text">
                                         <strong>해설:</strong> {currentQuestion.Explanation}

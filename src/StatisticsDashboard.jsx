@@ -93,27 +93,39 @@ function StatisticsDashboard({ quizProgress, allQuestions, onBack }) {
                     <ul className="stats-list">
                         {Object.entries(stats.categoryStats).map(([category, data]) => (
                              <li key={category}>
-                                <span className="list-item-name">{category}</span>
-                                <span className="list-item-value">{data.accuracy.toFixed(1)}%</span>
+                                {/* [수정] 헤더(이름, 값)와 프로그레스 바를 포함하는 구조로 변경 */}
+                                <div className="list-item-header">
+                                    <span className="list-item-name">{category}</span>
+                                    <span className="list-item-value">{data.accuracy.toFixed(1)}%</span>
+                                </div>
+                                <div className="progress-bar-background">
+                                    <div className="progress-bar-foreground" style={{width: `${data.accuracy}%`}}></div>
+                                </div>
                             </li>
                         ))}
                     </ul>
                 </div>
-                {/* [난이도 기능] 난이도별 통계 카드 추가 */}
                 <div className="stat-card difficulty-stats">
                     <h3>난이도별 정답률</h3>
                     <ul className="stats-list">
                         {Object.entries(stats.difficultyStats).map(([difficulty, data]) => (
                              <li key={difficulty}>
-                                <span className="list-item-name">{difficulty}</span>
-                                <span className="list-item-value">{data.accuracy.toFixed(1)}%</span>
+                                {/* [수정] 헤더(이름, 값)와 프로그레스 바를 포함하는 구조로 변경 */}
+                                <div className="list-item-header">
+                                    <span className="list-item-name">{difficulty}</span>
+                                    <span className="list-item-value">{data.accuracy.toFixed(1)}%</span>
+                                </div>
+                                <div className="progress-bar-background">
+                                    <div className="progress-bar-foreground" style={{width: `${data.accuracy}%`}}></div>
+                                </div>
                             </li>
                         ))}
                     </ul>
                 </div>
                 <div className="stat-card incorrect-questions">
                     <h3>자주 틀리는 문제 Top 5</h3>
-                     <ul>
+                     {/* [수정] 일관된 UI를 위해 ul 태그와 클래스명 추가 */}
+                     <ul className="stats-list incorrect-list">
                         {stats.incorrectQuestions.map((q) => (
                              <li key={q.ID}>
                                 <p className="question-title">{q.Question}</p>

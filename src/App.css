@@ -178,7 +178,6 @@
 .option-btn.incorrect { border-color: var(--incorrect-color); background-color: var(--incorrect-light-color); }
 .option-btn:disabled { cursor: not-allowed; opacity: 0.8; }
 
-/* [버그 수정] 주관식 입력창 스타일 추가 */
 .short-answer-input {
   width: 100%;
   padding: 16px;
@@ -289,4 +288,19 @@
   .header { font-size: 2.5rem; }
   .options-container { grid-template-columns: 1fr 1fr; gap: 16px; }
   .filters-container { flex-direction: row; gap: 20px; }
+}
+
+/* [추가] 주관식 정답 표시를 위한 스타일 */
+.correct-answer-text {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-color);
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-primary-color);
+    text-align: center;
+}
+.correct-answer-text strong {
+    color: var(--correct-color);
+    margin-right: 8px;
 }

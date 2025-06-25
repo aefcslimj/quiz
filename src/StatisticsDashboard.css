@@ -1,5 +1,3 @@
-/* StatisticsDashboard.css */
-
 .stats-container {
     width: 100%;
 }
@@ -39,7 +37,11 @@
     text-align: center;
     padding: 40px 20px;
 }
-
+.no-data-container .no-data-icon {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 16px;
+}
 .no-data-container h2 {
     font-size: 1.5rem;
     color: var(--text-primary-color);
@@ -88,28 +90,33 @@
     height: 100%;
     background-color: var(--primary-color);
     border-radius: 4px;
+    transition: width 0.5s ease-in-out;
 }
 
-/* [난이도 기능] 통계 리스트 스타일 공통화 */
 .stats-list {
     list-style: none;
     padding: 0;
     margin: 0;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 16px;
 }
 .stats-list li {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-bottom: 12px;
+    padding-bottom: 16px;
     border-bottom: 1px solid var(--border-color);
 }
 .stats-list li:last-child {
     border-bottom: none;
     padding-bottom: 0;
 }
+
+.list-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
 .list-item-name {
     font-weight: 500;
     color: var(--text-secondary-color);
@@ -117,28 +124,41 @@
 .list-item-value {
     font-weight: 600;
 }
-.category-accuracy .list-item-value { color: var(--correct-color); }
+
+.category-stats .list-item-value { color: var(--correct-color); }
+.category-stats .progress-bar-foreground { background-color: var(--correct-color); }
+
 .difficulty-stats .list-item-value { color: var(--primary-color); }
+.difficulty-stats .progress-bar-foreground { background-color: var(--primary-color); }
+
+.incorrect-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding-bottom: 12px;
+    gap: 12px; 
+}
 
 .question-title {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    padding-right: 16px;
+    line-height: 1.5; 
+    min-width: 0;
+    color: var(--text-primary-color);
+    font-size: 0.95rem;
 }
+
 .incorrect-count {
-    font-size: 0.9em;
+    font-size: 0.85em;
     color: white;
     background-color: var(--incorrect-color);
     padding: 4px 10px;
     border-radius: 20px;
-    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 /* 데스크톱 반응형 스타일 */
-@media (min-width: 900px) { /* 더 넓은 화면에서 3열로 */
+@media (min-width: 900px) {
     .stats-grid {
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
         gap: 24px;
     }
 }
