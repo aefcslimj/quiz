@@ -156,6 +156,8 @@ function App() {
         navigate('/quiz');
     };
 
+    const currentQuestion = useMemo(() => currentQuestionSet[currentQuestionIndex] || null, [currentQuestionSet, currentQuestionIndex]);
+
     const handleAnswerSubmission = useCallback((isTimeout = false) => {
         if (isAnswered || !currentQuestion) return;
         
@@ -225,7 +227,7 @@ function App() {
     }, [currentQuestionIndex, currentQuestionSet.length, timerSetting, navigate]);
 
     const handleOptionChange = useCallback((qid, ans) => !isAnswered && setUserAnswers(p => ({ ...p, [qid]: ans })), [isAnswered]);
-    const currentQuestion = useMemo(() => currentQuestionSet[currentQuestionIndex] || null, [currentQuestionSet, currentQuestionIndex]);
+    
     useEffect(() => {
         if (currentQuestion?.Type === 'MultipleChoice') {
             const options = [currentQuestion.Option1, currentQuestion.Option2, currentQuestion.Option3, currentQuestion.Option4].filter(Boolean);
@@ -342,7 +344,7 @@ function StartView({ learningStreak, allQuestions, quizProgress, uniqueCategorie
             </div>
             <div className="start-options">
                 <button className="action-btn btn-primary" onClick={startFilteredQuiz}>퀴즈 시작하기</button>
-                <button className="action-btn btn-correct" onClick={startReviewQuiz} disabled={reviewCount === 0}>복습하기 ({reviewCount})</button>
+                <button className="action-btn btn-correct" onClick={startReviewQuiz} disabled={reviewCount === 0}>맞춤 복습 ({reviewCount}개)</button>
                 <Link to="/stats" className="action-btn btn-secondary" style={{textDecoration: 'none'}}>통계 보기</Link>
             </div>
         </div>
